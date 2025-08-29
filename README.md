@@ -1,4 +1,4 @@
-<video src="demo.mp4" controls width="600"></video>
+<video src="demo.mp4" controls></video>
 
 # TalkSpace 🔐
 

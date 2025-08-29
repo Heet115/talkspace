@@ -1,3 +1,5 @@
+<video src="demo.mp4" controls width="600"></video>
+
 # TalkSpace 🔐
 
 A modern, secure real-time messaging application with end-to-end encryption built with React, TypeScript, and Firebase.

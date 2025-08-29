@@ -1,175 +1,295 @@
-# TalkSpace - Secure Real-time Chat Application
+# TalkSpace 🔐
 
-A modern, secure real-time chat application built with React, TypeScript, and Firebase, featuring end-to-end encryption for private messaging.
+A modern, secure real-time messaging application with end-to-end encryption built with React, TypeScript, and Firebase.
 
-## Features
+## 🌟 Features
 
-- 🔐 **End-to-End Encryption**: AES + RSA hybrid encryption for secure messaging
-- 🔑 **Key Management**: Generate and manage RSA key pairs for encryption
-- 💬 **Real-time Messaging**: Instant message delivery using Firestore
-- 👥 **User Management**: Create chats with other users
-- 🎨 **Modern UI**: Beautiful interface built with shadcn/ui components
-- 📱 **Responsive Design**: Works on desktop and mobile devices
-- ⚡ **Real-time Updates**: Messages appear instantly without page refresh
-- 🛡️ **Security**: Message encryption with visual indicators
-- 🔒 **Privacy**: Server cannot decrypt your messages
+### 🔒 Security & Encryption
+- **End-to-End Encryption**: Messages are encrypted with AES-256 and RSA-2048
+- **Hybrid Encryption**: Combines symmetric (AES) and asymmetric (RSA) encryption
+- **Key Management**: Automatic key generation and secure key exchange
+- **Privacy First**: Messages are encrypted before leaving the client
 
-## Getting Started
+### 💬 Real-time Messaging
+- **Instant Delivery**: Real-time message updates using Firebase
+- **Live Status**: Online/offline indicators
+- **Message History**: Persistent chat history
+- **User Profiles**: Customizable display names and avatars
+
+### 🎨 Modern UI/UX
+- **Responsive Design**: Works seamlessly on desktop and mobile
+- **Dark/Light Mode**: Automatic theme switching
+- **Smooth Animations**: Modern micro-interactions and transitions
+- **Glass Morphism**: Beautiful backdrop blur effects
+- **Accessibility**: WCAG compliant design
+
+### 🛠️ Developer Features
+- **TypeScript**: Full type safety and better development experience
+- **Component Library**: Built with Radix UI and custom components
+- **State Management**: React Context for global state
+- **Error Handling**: Comprehensive error boundaries and user feedback
+
+## 🚀 Quick Start
 
 ### Prerequisites
-
-- Node.js (v16 or higher)
+- Node.js (v18 or higher)
 - npm or yarn
 - Firebase project
 
 ### Installation
 
-1. Clone the repository:
-```bash
-git clone <repository-url>
-cd talkspace
-```
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/yourusername/talkspace.git
+   cd talkspace
+   ```
 
-2. Install dependencies:
-```bash
-npm install
-```
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
 
-3. Configure Firebase:
-   - Create a Firebase project at [Firebase Console](https://console.firebase.google.com/)
-   - Enable Authentication (Email/Password)
+3. **Configure Firebase**
+   - Create a new Firebase project at [Firebase Console](https://console.firebase.google.com/)
+   - Enable Authentication (Email/Password and Google)
    - Enable Firestore Database
-   - Update the Firebase configuration in `src/lib/firebase.ts`
+   - Update `src/lib/firebase.ts` with your Firebase config
 
-4. Set up Firestore Security Rules:
-```javascript
-rules_version = '2';
-service cloud.firestore {
-  match /databases/{database}/documents {
-    // Users can read all user documents (for chat creation)
-    match /users/{userId} {
-      allow read: if request.auth != null;
-      allow write: if request.auth != null && request.auth.uid == userId;
-    }
-    
-    // Users can read/write chats they participate in
-    match /chats/{chatId} {
-      allow read, write: if request.auth != null && 
-        request.auth.uid in resource.data.participants;
-    }
-    
-    // Users can read/write messages in chats they participate in
-    match /chats/{chatId}/messages/{messageId} {
-      allow read, write: if request.auth != null && 
-        request.auth.uid in get(/databases/$(database)/documents/chats/$(chatId)).data.participants;
-    }
-  }
-}
+4. **Start the development server**
+   ```bash
+   npm run dev
+   ```
+
+5. **Open your browser**
+   Navigate to `http://localhost:5173`
+
+## 📖 Usage Guide
+
+### Getting Started
+
+1. **Create Multiple Accounts**
+   - Open the app in two different browser windows
+   - Sign up with different email addresses
+   - This allows you to test the chat functionality
+
+2. **Start a Conversation**
+   - Click "New Chat" in the sidebar
+   - Search for other users by email
+   - Select a user to start chatting
+
+3. **Enable Encryption**
+   - Go to Settings (gear icon) in the sidebar
+   - Toggle encryption on/off
+   - Generate new encryption keys if needed
+
+### Testing the App
+
+1. **Multi-User Testing**
+   - Use different browsers or incognito windows
+   - Create accounts with different email addresses
+   - Start conversations between users
+
+2. **Encryption Demo**
+   - Use the encryption demo tools in the welcome screen
+   - Test message encryption/decryption
+   - Verify end-to-end security
+
+## 🏗️ Project Structure
+
+```
+talkspace/
+├── src/
+│   ├── components/
+│   │   ├── auth/           # Authentication components
+│   │   ├── chat/           # Chat interface components
+│   │   └── ui/             # Reusable UI components
+│   ├── contexts/           # React Context providers
+│   ├── hooks/              # Custom React hooks
+│   ├── lib/                # Utility libraries
+│   ├── types/              # TypeScript type definitions
+│   └── main.tsx           # Application entry point
+├── public/                # Static assets
+├── dist/                  # Build output
+└── package.json           # Dependencies and scripts
 ```
 
-5. Start the development server:
+## 🔧 Configuration
+
+### Firebase Setup
+
+1. **Authentication**
+   ```javascript
+   Enable in Firebase Console:
+   - Email/Password authentication
+   - Google authentication
+   ```
+
+2. **Firestore Rules**
+   ```javascript
+   rules_version = '2';
+   service cloud.firestore {
+     match /databases/{database}/documents {
+       match /users/{userId} {
+         allow read, write: if request.auth != null && request.auth.uid == userId;
+       }
+       match /chats/{chatId} {
+         allow read, write: if request.auth != null && 
+           request.auth.uid in resource.data.participants;
+       }
+       match /messages/{messageId} {
+         allow read, write: if request.auth != null && 
+           request.auth.uid in get(/databases/$(database)/documents/chats/$(resource.data.chatId)).data.participants;
+       }
+     }
+   }
+   ```
+
+### Environment Variables
+
+Create a `.env` file in the root directory:
+
+```env
+VITE_FIREBASE_API_KEY=your_api_key
+VITE_FIREBASE_AUTH_DOMAIN=your_auth_domain
+VITE_FIREBASE_PROJECT_ID=your_project_id
+VITE_FIREBASE_STORAGE_BUCKET=your_storage_bucket
+VITE_FIREBASE_MESSAGING_SENDER_ID=your_messaging_sender_id
+VITE_FIREBASE_APP_ID=your_app_id
+```
+
+## 🔐 Encryption Details
+
+### How It Works
+
+1. **Key Generation**
+   - Each user generates a RSA-2048 key pair
+   - Public keys are shared with other users
+   - Private keys remain on the user's device
+
+2. **Message Encryption**
+   - Generate a random AES-256 key for each message
+   - Encrypt the message content with AES-256
+   - Encrypt the AES key with the recipient's RSA public key
+   - Send both encrypted message and encrypted key
+
+3. **Message Decryption**
+   - Decrypt the AES key using your RSA private key
+   - Decrypt the message content using the AES key
+   - Display the decrypted message
+
+### Security Features
+
+- **Perfect Forward Secrecy**: Each message uses a unique AES key
+- **Asymmetric Encryption**: RSA-2048 for key exchange
+- **Symmetric Encryption**: AES-256 for message content
+- **Client-Side Only**: Encryption/decryption happens in the browser
+
+## 🛠️ Development
+
+### Available Scripts
+
 ```bash
-npm run dev
+npm run dev          # Start development server
+npm run build        # Build for production
+npm run preview      # Preview production build
+npm run lint         # Run ESLint
 ```
 
-6. Open [http://localhost:5173](http://localhost:5173) in your browser.
+### Code Style
 
-## How to Use
+- **TypeScript**: Strict type checking enabled
+- **ESLint**: Code linting with React and TypeScript rules
+- **Prettier**: Automatic code formatting
+- **Conventional Commits**: Standardized commit messages
 
-### Authentication
-1. Sign up with your email and password
-2. Or log in if you already have an account
+### Testing
 
-### Setting Up Encryption
-1. Click the settings icon (⚙️) in the top-right corner
-2. Click "Generate Keys" to create your RSA key pair
-3. Toggle "Enable Encryption" to activate secure messaging
-4. Your messages will now be encrypted before sending
+```bash
+# Run tests (when implemented)
+npm test
 
-### Creating Chats
-1. Click the "New Chat" button in the sidebar
-2. Search for users by name or email
-3. Click on a user to start a conversation
-
-### Sending Messages
-1. Select a chat from the sidebar
-2. Type your message in the input field
-3. Look for the lock icon (🔒) indicating encryption is active
-4. Press Enter or click the send button
-
-### Features
-- **End-to-End Encryption**: Messages are encrypted with AES and RSA
-- **Real-time Updates**: Messages appear instantly for all participants
-- **User Avatars**: Display user profile pictures and initials
-- **Message Timestamps**: See when messages were sent
-- **Encryption Indicators**: Visual feedback for encrypted messages
-- **Responsive Design**: Works seamlessly on mobile and desktop
-- **Loading States**: Visual feedback during operations
-
-## Project Structure
-
-```
-src/
-├── components/
-│   ├── auth/          # Authentication components
-│   ├── chat/          # Chat interface components
-│   └── ui/            # Reusable UI components (shadcn/ui)
-├── contexts/          # React contexts for state management
-├── hooks/             # Custom React hooks
-├── lib/               # Firebase and encryption configuration
-├── types/             # TypeScript type definitions
-└── App.tsx            # Main application component
+# Run tests in watch mode
+npm run test:watch
 ```
 
-## Technologies Used
+## 🚀 Deployment
 
-- **React 19** - UI framework
-- **TypeScript** - Type safety
-- **Firebase** - Backend services (Auth, Firestore)
-- **Vite** - Build tool
-- **Tailwind CSS** - Styling
-- **shadcn/ui** - UI components
-- **Lucide React** - Icons
-- **Crypto-js** - AES encryption
-- **Node-forge** - RSA key generation and encryption
+### Vercel (Recommended)
 
-## Security Features
+1. **Connect Repository**
+   - Push your code to GitHub
+   - Connect your repository to Vercel
 
-### Encryption System
-- **Hybrid Encryption**: AES for message content, RSA for key exchange
-- **Key Management**: Automatic RSA key pair generation
-- **End-to-End**: Server cannot decrypt messages
-- **Visual Indicators**: Lock icons show encryption status
+2. **Configure Environment Variables**
+   - Add Firebase configuration in Vercel dashboard
+   - Set all required environment variables
 
-### Security Considerations
-- Private keys are stored locally (demo implementation)
-- Messages are encrypted before transmission
-- No server-side message decryption
-- Secure key exchange using RSA
+3. **Deploy**
+   - Vercel will automatically deploy on push to main branch
 
-## Testing
+### Netlify
 
-For detailed testing instructions, see [TESTING_GUIDE.md](./TESTING_GUIDE.md).
+1. **Build Command**: `npm run build`
+2. **Publish Directory**: `dist`
+3. **Environment Variables**: Add Firebase config
 
-### Quick Test Setup
-1. Open the app in two browser windows
-2. Create accounts for both users
-3. Generate encryption keys and enable encryption
-4. Start a chat and send encrypted messages
-5. Verify messages are properly encrypted/decrypted
+### Firebase Hosting
 
-## Documentation
+```bash
+npm install -g firebase-tools
+firebase login
+firebase init hosting
+npm run build
+firebase deploy
+```
 
-- [Encryption Guide](./ENCRYPTION_GUIDE.md) - Detailed encryption implementation
-- [Testing Guide](./TESTING_GUIDE.md) - How to test the application
+## 🤝 Contributing
 
-## Contributing
+1. **Fork the repository**
+2. **Create a feature branch**
+   ```bash
+   git checkout -b feature/amazing-feature
+   ```
+3. **Commit your changes**
+   ```bash
+   git commit -m 'Add amazing feature'
+   ```
+4. **Push to the branch**
+   ```bash
+   git push origin feature/amazing-feature
+   ```
+5. **Open a Pull Request**
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Submit a pull request
+### Development Guidelines
 
-## License
+- Follow TypeScript best practices
+- Write meaningful commit messages
+- Add tests for new features
+- Update documentation as needed
+- Ensure accessibility compliance
 
-This project is licensed under the MIT License.
+## 📝 License
+
+This project is licensed under the MIT License
+
+## 🙏 Acknowledgments
+
+- **React Team** for the amazing framework
+- **Firebase** for backend services
+- **Radix UI** for accessible components
+- **Tailwind CSS** for styling
+- **CryptoJS & Node-Forge** for encryption
+
+## 🔄 Changelog
+
+### v1.0.0 (Current)
+- ✨ Initial release
+- 🔒 End-to-end encryption
+- 💬 Real-time messaging
+- 🎨 Modern UI/UX
+- 📱 Responsive design
+- 🔧 TypeScript support
+
+---
+
+**Made with ❤️ by Heet Viradiya**
